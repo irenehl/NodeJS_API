@@ -187,6 +187,18 @@ const UserController = {
         const user = await User.findOne({_id: req.user._id})
 
         return res.status(200).json(user)
+    },
+
+    deleteUser: async (req, res) => {
+        try {
+            await User.findOneAndDelete({ _id: req.user._id})
+
+            return res.status(200).json({error: false, message: "Deleted successfully"})
+        }
+        catch(err) {
+            console.log(err);
+            return res.status(400).json({error: true, message: "Ups! Something went wrong"})
+        }
     }
 }
 

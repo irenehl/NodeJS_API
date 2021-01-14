@@ -33,8 +33,10 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // Routes
 var useRoutes = require('./routes/UserRouter')
+var productRoutes = require('./routes/ProductRouter')
 
 app.use('/users', useRoutes)
+app.use('/products', productRoutes)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
