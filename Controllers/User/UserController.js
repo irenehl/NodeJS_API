@@ -15,7 +15,7 @@ const UserController = {
             if(notUnique.length != 0)
                 throw "Email or username already exits"
 
-            let hashedPassword = await bcrypt.hash(req.body.password, parseInt(process.env.SALT))
+            let hashedPassword = await bcrypt.hash(req.body.password, 10)
 
             let newUser = new User({
                 name: req.body.name,
@@ -57,7 +57,7 @@ const UserController = {
         }
         catch(err) {
             console.log(err);
-            return res.status(400).json({error: true, message: err.details != null ? err.details[0].message : err})
+            return res.status(400).json({error: true, message: err.details != null ? err.details[0].message : JSON.stringify(err)})
         }
     },
 
@@ -69,7 +69,6 @@ const UserController = {
             const matchUsers = await User.find({ $or: [{username: req.body.username}, {email: req.body.email}] })
 
             var unique = true
-            
             if(matchUsers.length != 0)
                 matchUsers.forEach(u => {
                     if(req.user._id != u._id)
@@ -100,7 +99,7 @@ const UserController = {
         }
     },
 
-    recovertPassword: async (req, res) =>  {
+    recoverPassword: async (req, res) =>  {
         try {
             var user = await User.findOne({email: req.body.email})
             
@@ -117,8 +116,8 @@ const UserController = {
                 `
                     <h2>Hi ${user.name}</h2>
                     <p>If you want to recover your password, please enter in this link:</p>
-                    <a href="${process.env.CLIENT_URL}/auth/${token}" target="_blank">Recover</a>
-                    <p></b>If you need help, enter this link: ${process.env.DEVELOPER_EMAIL}</p>
+                    <a href="${process.env.CLIENT_URL}/${token}" target="_blank">Recover</a>
+                    <p></b>If you need help, send us a email ${process.env.DEVELOPER_EMAIL}</p>
                     <h3>Elaniin team</h3>
                 `
             }
@@ -130,6 +129,33 @@ const UserController = {
         catch(err) {
             console.log(err);
             return res.status(500).json(err)
+        }
+    },
+
+    requestPasswordHandler: async(req, res) => {
+        try {
+            const token = req.header('Authorize')
+
+            if(!token)
+                throw {error: true, message: "Access denied"}
+
+            const verified = jwt.verify(token, process.env.TOKEN_RESET_KEY)
+
+            if(!verified)
+                throw {error: true, message: "Invalid token"}
+            
+            var user = await User.findOne({_id: verified._id})
+
+            user.password = await bcrypt.hash(req.body.newPassword, 10)
+
+            await User.findOneAndUpdate({_id: user._id},
+                {password: user.password})
+
+            return res.status(200).json({error: false, message: "Updated password, try login in"})
+        }
+        catch(err) {
+            console.log(err);
+            return res.status(500).json({message: JSON.stringify(err)})
         }
     },
 
