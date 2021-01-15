@@ -2,7 +2,8 @@ const express = require('express')
 const router = express.Router()
 
 const Authenticator = require('./Authenticator')
-const { register, loginUser, getCurrentUser, getAllUsers, updateUser, recoverPassword, requestPasswordHandler, deleteUser } = require('../Controllers/User/UserController')
+const { register, loginUser, getCurrentUser, getAllUsers,
+    updateUser, recoverPassword, requestPasswordHandler, deleteUser } = require('../Controllers/User/UserController')
 
 router.get('/', getAllUsers)
 router.get('/info', Authenticator, getCurrentUser)

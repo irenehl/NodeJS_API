@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 
-const { uploadMulter } = require('../controllers/Utilities/ImgUploader')
+const { uploadMulter } = require('../Controllers/Utilities/ImgUploader')
 const { register, getProducts, updateProduct, deleteProduct, productSearcher } = require('../Controllers/Product/ProductController')
 
 router.post('/register', uploadMulter.single('productImg'), register)
