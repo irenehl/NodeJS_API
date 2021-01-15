@@ -2,10 +2,15 @@ const express = require('express')
 const router = express.Router()
 
 const { uploadMulter } = require('../controllers/Utilities/ImgUploader')
-const { register, getProducts } = require('../Controllers/Product/ProductController')
+const { register, getProducts, updateProduct, deleteProduct, productSearcher } = require('../Controllers/Product/ProductController')
 
 router.post('/register', uploadMulter.single('productImg'), register)
 
-router.get('/get-all', getProducts)
+router.get('/search', productSearcher)
+router.get('/', getProducts)
+
+router.put('/update', updateProduct)
+
+router.delete('/delete', deleteProduct)
 
 module.exports = router

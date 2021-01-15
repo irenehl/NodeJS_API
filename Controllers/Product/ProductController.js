@@ -1,4 +1,4 @@
-const Product = require('../../models/ProductModel')
+const Product = require('../../Models/ProductModel')
 const { uploaderMethod } = require('../Utilities/ImgUploader')
 const { registerValidator, updateValidator } = require('./ProductValidator')
 
@@ -36,33 +36,28 @@ const ProductController = {
         try {
             await updateValidator(req.body)
 
-            var actualProduct = await Product.findOne({_id: req.product._id})
-            const matchProducts = await Product.find({SKU: req.body.SKU})
+            var actualProduct = await Product.findOne({ SKU: req.body.SKU })
+            const updateConflict = await Product.findOne({ SKU: req.body.newSKU })
 
-            var unique = true
-            if(matchProducts.length != 0)
-                matchProducts.forEach(u => {
-                    if(req.product._id != p._id)
-                        if(p.SKU == req.body.SKU)
-                            unique = false
-                })
-
-            if(!unique)
+            if(updateConflict)
                 throw {error: true, message: "SKU already exits"}
+            else if(!actualProduct)
+                throw {error: true, message: "Product not found"}
 
             actualProduct = {
-                SKU: req.body.SKU || actualProduct.SKU,
+                SKU: req.body.newSKU || actualProduct.SKU,
                 name: req.body.name || actualProduct.name,
                 stock: req.body.stock || actualProduct.stock,
                 price: req.body.price || actualProduct.price,
-                description: req.body.price || actualDescription
+                description: req.body.price || actualProduct.description
             }
 
-            await Product.findOneAndUpdate({_id: req.product._id}, actualProduct)
+            await Product.findOneAndUpdate({SKU: req.body.SKU}, actualProduct)
             return res.status(200).json({error: false, message: "Product updated"})
         }
         catch(err) {
-            return res.status(400).json(err.details != null ? err.details[0].message : err)
+            console.log(err)
+            return res.status(400).json({error: true, message: err.details != null ? err.details[0].message : JSON.stringify(err)})
         }
     },
 
@@ -71,7 +66,7 @@ const ProductController = {
             console.log(req.query);
             const { page = 1, limit = 12 } = req.query
 
-            const product = await Product.find()
+            const products = await Product.find()
                 .limit(limit * 1)
                 .skip((page - 1) * limit)
                 .exec()
@@ -81,7 +76,7 @@ const ProductController = {
             return res.status(200).json({
                 totalPages: Math.ceil(count / limit),
                 currentPage: page,
-                product
+                products
             })
         }
         catch(err) {
@@ -90,11 +85,40 @@ const ProductController = {
         }
     },
 
-    // getCurrentProduct: async (req, res) =>  {
-    //     const Product = await Product.findOne({_id: req.product._id})
+    productSearcher: async (req, res) =>  {
+        try{
+            const { page = 1, limit = 12 } = req.query
 
-    //     return res.status(200).json(product)
-    // }
+            const products = await Product.find({ $or: [ {SKU: req.query.SKU}, {name: req.query.name} ] })
+                .limit(limit * 1)
+                .skip((page - 1) * limit)
+                .exec()
+
+            const count = await Product.countDocuments()
+
+            return res.status(200).json({
+                totalPages: Math.ceil(count / limit),
+                currentPage: page,
+                products
+            })
+        }
+        catch(err) {
+            console.log(err);
+            return res.status(500).json({error: true, message: "Ups, something went wrong"})
+        }
+    },
+
+    deleteProduct: async (req, res) => {
+        try {
+            await Product.findOneAndDelete({ SKU: req.body.SKU})
+
+            return res.status(200).json({error: false, message: "Deleted successfully"})
+        }
+        catch(err) {
+            console.log(err);
+            return res.status(400).json({error: true, message: "Ups! Something went wrong"})
+        }
+    }
 }
 
 module.exports = ProductController

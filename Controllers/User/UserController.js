@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 const mailer = require('../Utilities/SendgridMailer')
-const User = require('../../models/UserModel')
+const User = require('../../Models/UserModel')
 const { registerValidator, loginValidator, updateValidator } = require('./Validator')
 
 const UserController = {

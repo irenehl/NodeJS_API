@@ -21,6 +21,7 @@ const Validator = {
     updateValidator: data => {
         const validateSchema = joi.object({
             SKU: joi.string(),
+            newSKU: joi.string(),
             name: joi.string(),
             stock: joi.number(),
             price: joi.number(),
