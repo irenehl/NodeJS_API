@@ -1,4 +1,4 @@
-# Elaniin API
+# Users and Products API
 
 ## Summary 
 [Description](#Description)\
@@ -11,7 +11,6 @@
 ## Description
 
 This API was create in NodeJS with express web framework. 
-Deployed in heroku at https://elaniinapi.herokuapp.com/
 
 ## Installation
 
@@ -23,7 +22,7 @@ Deployed in heroku at https://elaniinapi.herokuapp.com/
 
 ## Dependencies
 
-Listed on [package.json](https://github.com/irenehl/ElaniinBack_test/blob/master/package.json)
+Listed on [package.json](https://github.com/irenehl/NodeJS_API/blob/master/package.json)
 
 ## Seeding
 
@@ -97,5 +96,5 @@ The base of the API are ***products and users*** so, these are the schemas that 
 
 ## Endpoints
 
-Endpoints are documented and handled in **Insomnia** client, refer to [Insomnia JSON file](https://github.com/irenehl/ElaniinBack_test/blob/master/Docs/Insomnia_2021-01-14.json) and import it to client.
+Endpoints are documented and handled in **Insomnia** client, refer to [Insomnia JSON file](https://github.com/irenehl/NodeJS_API/blob/master/Docs/Insomnia_2021-01-14.json) and import it to client.
 
